@@ -45,7 +45,6 @@ def mojaFunkcija(dolzina, pogresek, alfa):
     #print(math.degrees(betaminus))
     #print(math.degrees(betaplus))
 
-    d1 = (d * math.tan(betaplus))/2.0
     d2 = (d * math.tan(betaplus) * math.tan(betaminus))/(math.tan(betaminus) + math.tan(betaplus))
     #d2 = d2_calculator(d, beta, pogresek) #KUL
 
@@ -72,9 +71,21 @@ def mojaFunkcija(dolzina, pogresek, alfa):
     povrsina = math.ceil(povrsina)
     return povrsina
 
+# še enkrat ista funkcija kot zgoraj (kot "mojaFunkcija"), samo da je ta okrajšana i ncelotno površino izračuna v eni vrstici, brez vmesnih izračunov posameznih dolžin
+def izpeljana_formula(dolzina, pogresek, alfa):
+    beta = 90.0 - (alfa / 2.0)
+    d = float(dolzina)
+    pogresek = float(pogresek)
+    beta = float(beta)
+    beta = math.radians(beta)
+    betaminus = beta - pogresek
+    betaplus = beta + pogresek
+
+    povrsina = ((d * math.tan(betaplus) - d * math.tan(betaminus)) / 2.0 ) * ((d * math.tan(betaplus)) / (math.tan(betaminus) + math.tan(betaplus)) - d / 2.0)
+    return povrsina
+
+
 maxnapaka = math.ceil(d * d * math.tan(pogresek) / 2.0)
-
-
 
 x_alfa_moja = []
 y_alfa_moja = []
@@ -113,9 +124,9 @@ y_oddaljenost_istoObnocje_solska = []
 # --------- PRIMERJAVA ŠOLSKE IN MOJE FORMULE ZA VELIKO ODDALJENOST OD BAZNIH POSTAJ (VELIKA NAPAKA) --------------#
 # izračun je smiseln za kote med 0 in 10 stopinj. Da se razlike opazi pri isti skali za oba grafa, sem narisal kote med 1.8°in 4°.
 def graf_primerjave_obeh_formul (d, pogresek):
-    for alfa in range(18, 40):
-        alfa = 0.1 * alfa
-        povrsina_moja = mojaFunkcija(d, pogresek, alfa)
+    for alfa in range(20, 180):
+        
+        povrsina_moja = izpeljana_formula(d, pogresek, alfa)
         povrsina_solska = funkcijaIzZvezka(d, pogresek, alfa)
         if ((maxnapaka < povrsina_moja) and (alfa > 170) ):
             povrsina_moja = maxnapaka
@@ -149,7 +160,7 @@ def graf_primerjave_obeh_formul (d, pogresek):
 # Da ni razpon grafa prevelik (in se posledično ne bi videlo njegove oblike pri relativno majhnih vrsnostih), je narejen za kote med 20° in 180°.
 # Pri kotih manjših od 20° je namreč napaka že zelo velika in je tolikokrat večja od napake pri kotih večjih od 20°, da se napake pri slednjih sploh ne oprazi (če rišeš graf od 0° do 180°.)
 def graf_napake_ob_podanem_alfa (d, pogresek):
-    for alfa in range(20, 180):
+    for alfa in range(2, 180):
         povrsina_moja = mojaFunkcija(d, pogresek, alfa)
         if ((maxnapaka < povrsina_moja) and (alfa > 170) ):
             povrsina_moja = maxnapaka
