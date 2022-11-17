@@ -13,7 +13,7 @@ pogresek = 0.01 #podan v radianih
 
 
 #vnesi dolzino v metrih, pogresek v radianih in alfo v stopinjah
-def funkcijaIzZvezka(dolzina, pogresek, alfa):
+def funkcijaIzZvezka(d, pogresek, alfa):
     if (alfa > 179):
         alfa = 178
     beta = 90 - (alfa / 2.0)
@@ -84,6 +84,21 @@ def izpeljana_formula(dolzina, pogresek, alfa):
     povrsina = ((d * math.tan(betaplus) - d * math.tan(betaminus)) / 2.0 ) * ((d * math.tan(betaplus)) / (math.tan(betaminus) + math.tan(betaplus)) - d / 2.0)
     return povrsina
 
+#še bonus funkcija za izračun površine negotovisti v odvisnosti od vidnega kota pri konstantni oddaljenosti od baznih postaj
+def negotovostGledeNaKot (konstantna_d, pogresek, alfa):
+    if (alfa > 179):
+        alfa = 178
+    beta = 90 - (alfa / 2.0)
+    beta = math.radians(beta)
+    alfa = math.radians(alfa)
+    pogresekNaDva =  pow(pogresek, 2.0)
+    if (math.cos(beta) == 0 or math.sin(alfa) == 0):
+        povrsina = 10
+    else:
+        povrsina = (4.0 * pogresekNaDva * pow(konstantna_d, 2) / math.sin(alfa))
+
+    povrsina = round(povrsina, 3)
+    return povrsina
 
 maxnapaka = math.ceil(d * d * math.tan(pogresek) / 2.0)
 
@@ -209,11 +224,32 @@ def graf_napaka_za_oddaljenost_od_zveznice(d, pogresek):
 #graf_napaka_za_oddaljenost_od_zveznice (d, pogresek)
 # ------------------------------------------------------------------------------------------------------------------#
 
+# BONUS:
+# --------- GRAF NAPAKE (POVRŠINE) V ODVISNOSTI OD VELIKOSTI OD VIDNEGA KOTA NA KONSTANTNI RAZDALJI -------------- #
+konstantna_razdalja = 144
+def graf_napakaKot_konst_razdalja (konstantna_razdalja, pogresek):
+    for alfa in range(1, 180):
+        povrsina_moja = negotovostGledeNaKot(konstantna_razdalja, pogresek, alfa)
+        x_alfa_moja.append(alfa)
+        y_alfa_moja.append(povrsina_moja)
+        print("če je alfa: " + str(alfa) + ", potem moja povrsina pogreska znasaaa: " + str(povrsina_moja))
 
+    plt.plot(x_alfa_moja, y_alfa_moja, label = "moja formula")
+
+    plt.title('Graf napake (površine) v odvisnosti od vidnega kota')
+    plt.xlabel('kot alfa [°]')
+    plt.ylabel('velikost pogreska [m^2]')
+    ay = plt.gca() #ta in naslednji korak obrneta x os, da kot alfa pada
+    ay.set_xlim(ay.get_xlim()[::-1])
+    plt.show()
+
+
+graf_napakaKot_konst_razdalja(konstantna_razdalja, pogresek)
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 # ------------------------------------------------------------   KONEC IZRISOVANJA GRAFOV     ---------------------------------------------------------------------------------#
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
 
 
 
